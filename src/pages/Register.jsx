@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { Context, server } from '../main';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 function RegisterForm() {
+
+    const navigate = useNavigate();
     const [step, setStep] = useState(1);
+    const [error, setError] = useState(false);
+    const { isAuthenticated, setIsAuthenticated, loading, setLoading } = useContext(Context);
+
+    console.log(isAuthenticated)
+
     const [formData, setFormData] = useState({
         country: '',
-        district: '',
-        profile: '',
-        name: '',
+        city: '',
+        profilePicture: null,
+        username: '',
         email: '',
         password: '',
         userType: '',
-        collegeName: '',
-        degreeName: '',
+        college: '',
+        degree: '',
         startDate: '',
         endDate: '',
         currentEmployee: '',
@@ -21,7 +32,8 @@ function RegisterForm() {
         gender: '',
         bio: '',
         skills: '',
-        achievements: ''
+        headline: '',
+        achievments: ''
     });
 
     const handleChange = e => {
@@ -32,17 +44,41 @@ function RegisterForm() {
         }));
     };
 
-    const handleSubmit = e => {
+    const handleImageChange = e => {
+        const file = e.target.files[0];
+        setFormData(prevData => ({
+            ...prevData,
+            profilePicture: file
+        }));
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (step === 4) {
+            try {
+                const formDataToSend = new FormData();
+                Object.entries(formData).forEach(([key, value]) => {
+                    formDataToSend.append(key, value);
+                });
+                const { data } = await axios.post(`${server}/api/users/`, formDataToSend);
+                console.log(data.message);
+                console.log(data);
+                toast.success(data.message);
+                setIsAuthenticated(true);
+                navigate("/");
+            } catch (error) {
+                toast.error(error.response.data.message);
+                console.log(error.response.data.message);
+                setIsAuthenticated(false);
+            }
             // Submit the form data
             console.log(formData);
             // Reset the form data
             setFormData({
                 country: '',
-                district: '',
-                profile: '',
-                name: '',
+                city: '',
+                profilePicture: null,
+                username: '',
                 email: '',
                 password: '',
                 userType: '',
@@ -55,9 +91,10 @@ function RegisterForm() {
                 dob: '',
                 gender: '',
                 bio: '',
+                headline: '',
                 designation: '',
                 skills: '',
-                achievements: ''
+                achievments: ''
             });
             // Reset the step
             setStep(1);
@@ -81,7 +118,7 @@ function RegisterForm() {
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-medium mb-2">City/District*</label>
-                        <input type="text" name="district" value={formData.district} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                        <input type="text" name="city" value={formData.city} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
                     </div>
                 </>
             )}
@@ -91,11 +128,11 @@ function RegisterForm() {
                     <h1 className="text-center text-xl font-bold mb-8">Your Profile helps you discover new people and opportunity</h1>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Profile Picture:</label>
-                        <input type="file" name="profile" value={formData.profile} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                        <input type="file" name="profilePicture" onChange={handleImageChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Name:</label>
-                        <input type="text" name="name" value={formData.name} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                        <input type="text" name="username" value={formData.username} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Email:</label>
@@ -125,6 +162,10 @@ function RegisterForm() {
                         <label className="block text-gray-700 text-sm font-bold mb-2">Bio:</label>
                         <textarea name="bio" value={formData.bio} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
                     </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">Headline:</label>
+                        <textarea name="headline" value={formData.headline} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                    </div>
 
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">User Type:</label>
@@ -144,11 +185,11 @@ function RegisterForm() {
                     <h1 className="text-center text-xl font-bold mb-8">Your Profile helps you discover new people and opportunity</h1>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">College/University *</label>
-                        <input type="text" name="collegeName" value={formData.collegeName} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                        <input type="text" name="college" value={formData.college} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Degree Name *</label>
-                        <input type="text" name="degreeName" value={formData.degreeName} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+                        <input type="text" name="degree" value={formData.degree} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Start Date *</label>
@@ -192,7 +233,7 @@ function RegisterForm() {
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Achievements/Certifications:</label>
-                        <textarea rows="3" name="achievements" value={formData.achievements} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                        <textarea rows="3" name="achievments" value={formData.achievments} onChange={handleChange} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
                     </div>
                 </>
             )}

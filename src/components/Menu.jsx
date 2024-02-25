@@ -1,15 +1,42 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { Context, server } from '../main';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const Menu = () => {
 
+    const { isAuthenticated, setIsAuthenticated, loading, setLoading } = useContext(Context);
+    const [user, setUser] = useState({});
+
+    const logoutHandler = async () => {
+        setLoading(true);
+        try {
+            const { data } = await axios.post(`${server}/api/users/logout`, { withCredentials: true });
+            toast.success("Logged Out Successfully");
+            setIsAuthenticated(false);
+            toast.success(data.message);
+            setLoading(false);
+        } catch (error) {
+            toast.error(error.response.data.message);
+            setIsAuthenticated(false);
+            setLoading(false)
+        }
+    }
+
+
     return (
         <div className="bg-black w-[200px] flex flex-col items-center absolute top-12 right-2 md:right-5 rounded-md p-4 space-y-1">
-            <Link to="/userdashboard" className="text-white text-sm hover:text-gray-500 cursor-pointer">User Profile</Link>
-            <Link to="/login" className="text-white text-sm hover:text-gray-500 cursor-pointer">Login</Link>
-            <Link to="/logout" className="text-white text-sm hover:text-gray-500 cursor-pointer">Log Out</Link>
-            <Link to="/register" className="text-white text-sm hover:text-gray-500 cursor-pointer">Register</Link>
-        </div>
+
+            {isAuthenticated ? (<Link to={"/userdashboard"} className="text-white text-sm hover:text-gray-500 cursor-pointer">User Profile</Link>) :
+                (< Link to="/register" className="text-white text-sm hover:text-gray-500 cursor-pointer">Register</Link>)
+            }
+
+            {!isAuthenticated ? (<Link to="/login" className="text-white text-sm hover:text-gray-500 cursor-pointer">Login</Link>) :
+                (<Link onClick={logoutHandler} className="text-white text-sm hover:text-gray-500 cursor-pointer">Log Out</Link>)
+
+            }
+        </div >
     );
 };
 

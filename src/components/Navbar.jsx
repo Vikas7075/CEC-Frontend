@@ -11,8 +11,8 @@ function Navbar() {
     return (
         <nav className="navbar">
             <div className="navbar-left">
-                <a href="/" className="logo">
-                    <img src="/images/logo.png" alt="logo.png" />
+                <a href="/" className=" w-16">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1d/CEC_Logo.jpg" alt="logo.png" />
                 </a>
                 <div className="search-box">
                     <img src="images/search.png" alt="search" />
