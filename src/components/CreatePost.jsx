@@ -64,7 +64,7 @@ const CreatePost = () => {
         <form>
             <div className="create-post">
                 <div className="create-post-input">
-                    <img src="images/user-1.png" alt="User" />
+                    <img src="https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg" alt="User" />
                     <textarea className=' hover:cursor-pointer' rows="2" placeholder="Create a post" onClick={openModal}></textarea>
                 </div>
                 {/* Modal for adding text and image */}

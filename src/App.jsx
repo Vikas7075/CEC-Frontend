@@ -10,6 +10,7 @@ import { Route, BrowserRouter as Router, Routes, useParams } from 'react-router-
 import { Context, server } from './main.jsx'
 import axios from 'axios'
 import toast, { Toaster } from 'react-hot-toast'
+import PageNotFound from './components/PageNotFound.jsx'
 
 function App() {
 
@@ -55,6 +56,7 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/userdashboard/:id' element={<UserDashboard />} />
+          <Route path='*' element={<PageNotFound />} />
         </Routes>
         <Toaster />
       </Router>

@@ -7,8 +7,10 @@ import { useParams } from 'react-router-dom';
 import { FaPlus } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
+import { AiFillLike } from "react-icons/ai";
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import LikeButton from '../components/LikeButton';
 
 
 function UserDashboard() {
@@ -16,6 +18,7 @@ function UserDashboard() {
     const [educationData, setEducationData] = useState([]);
     const [experienceData, setExperienceData] = useState([]);
     const [posts, setPosts] = useState([]);
+    const [modalType, setModalType] = useState("");
     const [newExperience, setNewExperience] = useState({
         position: '',
         company: '',
@@ -23,8 +26,15 @@ function UserDashboard() {
         end_date: '',
         desc: ''
     })
+    const [newEducation, setNewEducation] = useState({
+        institution: '',
+        degree: '',
+        start_date: '',
+        end_date: '',
+    })
     const [showModal, setShowModal] = useState(false);
     const [editExperience, setEditExperience] = useState(null);
+    const [editEducation, setEditEducation] = useState(null);
 
     const { setIsAuthenticated, setLoading } = useContext(Context);
     const userId = useParams().id;
@@ -116,6 +126,62 @@ function UserDashboard() {
     }
 
     //console.log(user)
+
+    const handleEducationSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await axios.post(`${server}/api/education`, newEducation, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true
+            });
+            setEducationData([...educationData, response.data]);
+            toast.success("Education added successfully");
+            setShowModal(false);
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response.data.message);
+        }
+    };
+
+    const handleDeleteEducation = async (educationId) => {
+        try {
+            await axios.delete(`${server}/api/education/${educationId}`, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true
+            });
+            setExperienceData(educationData.filter(edu => edu._id !== educationId));
+            toast.success("Education deleted successfully");
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response.data.message);
+        }
+    };
+
+    const handleEditEducationSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.put(`${server}/api/education/${editEducation._id}`, editEducation, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true
+            });
+            // Update experienceData with the modified experience details
+            setEducationData(educationData.map(edu => (edu._id === editEducation._id ? response.data : edu)));
+            toast.success("Education updated successfully");
+            // Clear the editExperience state and close the edit form
+            console.log(response.data)
+            //setEditExperience(null);
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response.data.message);
+        }
+    };
 
     const handleExperienceSubmit = async (e) => {
         e.preventDefault();
@@ -223,9 +289,9 @@ function UserDashboard() {
                     <div className='post'>
                         {/* Render each post */}
                         {posts.map(post => (
-                            <div key={post._id} className="post">
+                            <div key={post._id} className="post w-[500px] border rounded-r-md">
                                 <div className="post-author">
-                                    <img src="images/user-2.png" alt="Author" />
+                                    <img src={post.user.profilePicture} alt="Author" />
                                     <div>
                                         <Link className='hover:underline' to={`/userdashboard/${post.user._id}`}><h1>{post.user.username}</h1></Link>
                                         <small>{post.user.headline}</small>
@@ -238,28 +304,39 @@ function UserDashboard() {
                                 {post.image && <img src={post.image} width="100%" alt="Post" />}
                                 <div className="post-stats">
                                     <div>
-                                        <img src="images/thumbsup.png" alt="Thumbs Up" />
+                                        <img src="../../public/images/thumbsup.png" alt="Thumbs Up" />
                                         <span className="liked-users">{post.likes.length} Likes</span>
                                     </div>
                                     <div>
-                                        {/* Render comments and shares if needed */}
+                                        <span>{post.comments.length} Comments</span>
                                     </div>
+                                </div>
+                                <div>
+                                    {post.comments.map(comment => (
+                                        <div key={comment._id} className='comment'>
+
+                                            <div>
+                                                <p>{comment.postId}</p>
+                                                <p>{comment.content}</p>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                                 <div className="post-activity">
                                     <div className="post-activity-link">
-                                        <img src="images/like.png" alt="Like" />
-                                        {/* Implement like functionality here */}
+                                        <img src="../../public/images/like.png" alt="Like" />
+                                        <LikeButton postId={post._id} />
                                     </div>
                                     <div className="post-activity-link">
-                                        <img src="images/comment.png" alt="Comment" />
+                                        <img src="../../public/images/comment.png" alt="Comment" />
                                         <span>Comment</span>
                                     </div>
                                     <div className="post-activity-link">
-                                        <img src="images/share.png" alt="Share" />
+                                        <img src="../../public/images/share.png" alt="Share" />
                                         <span>Share</span>
                                     </div>
                                     <div className="post-activity-link">
-                                        <img src="images/send.png" alt="Send" />
+                                        <img src="../../public/images/send.png" alt="Send" />
                                         <span>Send</span>
                                     </div>
                                 </div>
@@ -285,34 +362,65 @@ function UserDashboard() {
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
                     <div className="bg-white rounded-lg overflow-hidden shadow-xl w-full sm:w-96">
                         <div className=' p-5'>
-                            <h2 className="text-xl font-bold mb-4">Add Experience</h2>
-                            <form onSubmit={handleExperienceSubmit} className="px-6 py-4">
-                                {/* Form inputs for new experience */}
-                                <div className="mb-4">
-                                    <label htmlFor="position" className="block text-sm font-medium text-gray-700">Position</label>
-                                    <input type="text" id="position" name="position" value={newExperience.position} onChange={(e) => setNewExperience({ ...newExperience, position: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                </div>
-                                <div className="mb-4">
-                                    <label htmlFor="company" className="block text-sm font-medium text-gray-700">Company</label>
-                                    <input type="text" id="company" name="company" value={newExperience.company} onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                </div>
-                                <div className="mb-4">
-                                    <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">Start Date</label>
-                                    <input type="date" id="start_date" name="start_date" value={newExperience.start_date} onChange={(e) => setNewExperience({ ...newExperience, start_date: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                </div>
-                                <div className="mb-4">
-                                    <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">End Date</label>
-                                    <input type="date" id="end_date" name="end_date" value={newExperience.end_date} onChange={(e) => setNewExperience({ ...newExperience, end_date: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                                </div>
-                                <div className="mb-4">
-                                    <label htmlFor="desc" className="block text-sm font-medium text-gray-700">Description</label>
-                                    <textarea id="desc" name="desc" value={newExperience.desc} onChange={(e) => setNewExperience({ ...newExperience, desc: e.target.value })} rows="3" className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-                                </div>
-                                <div className="flex justify-center">
-                                    <button type="submit" className="px-4 py-2 rounded-md font-bold border text-blue-700 bg-transparent hover:bg-blue-600 mr-2">Add Experience</button>
-                                    <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 rounded-md font-bold border text-red-700 bg-transparent hover:bg-red-100">Cancel</button>
-                                </div>
-                            </form>
+                            {modalType === 'experience' && (
+                                <>
+                                    < h2 className="text-xl font-bold mb-4">Add Experience</h2>
+                                    <form onSubmit={handleExperienceSubmit} className="px-6 py-4">
+                                        {/* Form inputs for new experience */}
+                                        <div className="mb-4">
+                                            <label htmlFor="position" className="block text-sm font-medium text-gray-700">Position</label>
+                                            <input type="text" id="position" name="position" value={newExperience.position} onChange={(e) => setNewExperience({ ...newExperience, position: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label htmlFor="company" className="block text-sm font-medium text-gray-700">Company</label>
+                                            <input type="text" id="company" name="company" value={newExperience.company} onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">Start Date</label>
+                                            <input type="date" id="start_date" name="start_date" value={newExperience.start_date} onChange={(e) => setNewExperience({ ...newExperience, start_date: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">End Date</label>
+                                            <input type="date" id="end_date" name="end_date" value={newExperience.end_date} onChange={(e) => setNewExperience({ ...newExperience, end_date: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label htmlFor="desc" className="block text-sm font-medium text-gray-700">Description</label>
+                                            <textarea id="desc" name="desc" value={newExperience.desc} onChange={(e) => setNewExperience({ ...newExperience, desc: e.target.value })} rows="3" className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                                        </div>
+                                        <div className="flex justify-center">
+                                            <button type="submit" className="px-4 py-2 rounded-md font-bold border text-blue-700 bg-transparent hover:bg-blue-600 mr-2">Add Experience</button>
+                                            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 rounded-md font-bold border text-red-700 bg-transparent hover:bg-red-100">Cancel</button>
+                                        </div>
+                                    </form>
+                                </>)}
+                            {modalType === 'education' && (
+                                <>
+                                    < h2 className="text-xl font-bold mb-4">Add Education</h2>
+                                    <form onSubmit={handleEducationSubmit} className="px-6 py-4">
+                                        {/* Form inputs for new experience */}
+                                        <div className="mb-4">
+                                            <label htmlFor="position" className="block text-sm font-medium text-gray-700">Institution</label>
+                                            <input type="text" id="institution" name="institution" value={newEducation.institution} onChange={(e) => setNewEducation({ ...newEducation, institution: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label htmlFor="company" className="block text-sm font-medium text-gray-700">Degree</label>
+                                            <input type="text" id="degree" name="degree" value={newEducation.degree} onChange={(e) => setNewEducation({ ...newEducation, degree: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">Start Date</label>
+                                            <input type="date" id="start_date" name="start_date" value={newEducation.start_date} onChange={(e) => setNewEducation({ ...newEducation, start_date: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">End Date</label>
+                                            <input type="date" id="end_date" name="end_date" value={newEducation.end_date} onChange={(e) => setNewEducation({ ...newEducation, end_date: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                        </div>
+                                        <div className="flex justify-center">
+                                            <button type="submit" className="px-4 py-2 rounded-md font-bold border text-blue-700 bg-transparent hover:bg-blue-600 mr-2">Add Education</button>
+                                            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 rounded-md font-bold border text-red-700 bg-transparent hover:bg-red-100">Cancel</button>
+                                        </div>
+                                    </form>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -353,6 +461,38 @@ function UserDashboard() {
                     </div>
                 </div>
             )}
+            {editEducation && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-white rounded-lg overflow-hidden shadow-xl w-full sm:w-96">
+                        <div className=' p-5'>
+                            <h2 className="text-xl font-bold mb-4">Edit Education</h2>
+                            <form onSubmit={handleEditEducationSubmit} className="px-6 py-4">
+                                <div className="mb-4">
+                                    <label htmlFor="institution" className="block text-sm font-medium text-gray-700">Institution</label>
+                                    <input type="text" id="institution" name="institution" value={editEducation.institution} onChange={(e) => setEditEducation({ ...editEducation, institution: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="degree" className="block text-sm font-medium text-gray-700">Degree</label>
+                                    <input type="text" id="degree" name="degree" value={editEducation.degree} onChange={(e) => setEditEducation({ ...editEducation, degree: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">Start Date</label>
+                                    <input type="date" id="start_date" name="start_date" value={editEducation.start_date} onChange={(e) => setEditEducation({ ...editEducation, start_date: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">End Date</label>
+                                    <input type="date" id="end_date" name="end_date" value={editEducation.end_date} onChange={(e) => setEditEducation({ ...editEducation, end_date: e.target.value })} className="mt-1 p-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                                </div>
+                                <div className="flex justify-center">
+                                    <button type="submit" className="px-4 py-2 rounded-md font-bold border text-blue-700 bg-transparent hover:bg-blue-600 mr-2">Update</button>
+                                    <button type="button" onClick={() => setEditEducation(null)} className="px-4 py-2 rounded-md font-bold border text-red-700 bg-transparent hover:bg-red-100">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
 
 
 
@@ -362,14 +502,10 @@ function UserDashboard() {
                     {/* Button to add new experience */}
 
                     <div className="flex items-center gap-2 mr-8">
-                        <button onClick={() => setShowModal(true)} className="flex items-center px-4 py-2 rounded-md font-bold border text-blue-500 bg-transparent hover:bg-blue-600">
+                        <button onClick={() => { setShowModal(true); setModalType('experience') }} className="flex items-center px-4 py-2 rounded-md font-bold border text-blue-500 bg-transparent hover:bg-blue-600">
                             <FaPlus className="mr-2" />
                             ADD
                         </button>
-
-
-
-
                     </div>
                 </div>
 
@@ -410,7 +546,16 @@ function UserDashboard() {
             </div>
 
             <div className="bg-white border rounded-md shadow-md">
-                <h2 className="text-xl font-bold px-6 py-4 border-b">Education</h2>
+                <div className=' flex justify-between'>
+                    <h2 className="text-xl font-bold px-6 py-4 border-b">Education</h2>
+                    <div className="flex items-center gap-2 mr-8">
+                        <button onClick={() => { setShowModal(true); setModalType('education') }} className="flex items-center px-4 py-2 rounded-md font-bold border text-blue-500 bg-transparent hover:bg-blue-600">
+                            <FaPlus className="mr-2" />
+                            ADD
+                        </button>
+                    </div>
+                </div>
+
                 <div className="px-6 py-4">
                     <div className="border border-gray-300 rounded-lg p-4">
                         {educationData && educationData.length > 0 ? (
@@ -422,6 +567,14 @@ function UserDashboard() {
                                         <p className="text-gray-500">
                                             {new Date(edu.start_date).toLocaleDateString()} - {new Date(edu.end_date).toLocaleDateString()}
                                         </p>
+                                        <div className="flex items-center gap-2 mr-8 mt-3">
+                                            <button onClick={() => handleDeleteEducation(edu._id)} className="flex items-center px-4 py-2 rounded-md font-bold border text-red-500 bg-transparent hover:bg-red-600">
+                                                <MdDelete className="mr-2" />
+                                            </button>
+                                            <button onClick={() => setEditEducation(edu)} className="flex items-center px-4 py-2 rounded-md font-bold border text-yellow-500 bg-transparent hover:bg-yellow-600">
+                                                <FaEdit className="mr-2" />
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </ol>
@@ -440,7 +593,7 @@ function UserDashboard() {
                     </ul>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

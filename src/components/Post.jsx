@@ -25,7 +25,7 @@ const Post = ({ post }) => {
     return (
         <div className="post">
             <div className="post-author">
-                <img className='' src="images/user-2.png" alt="Author" />
+                <img className='' src={post.user.profilePicture} alt="Author" />
                 <div>
                     <Link className=' hover:underline' to={`/userdashboard/${post.user._id}`}><h1>{post.user.username}</h1></Link>
 
@@ -45,7 +45,7 @@ const Post = ({ post }) => {
                     <span className="liked-users">{post.likes.length} Likes</span>
                 </div>
                 <div>
-                    {/* <span>22 comments &middot; 30 shares</span> */}
+                    <span>{post.comments.length} Comments</span>
                 </div>
             </div>
             <div className="post-activity">

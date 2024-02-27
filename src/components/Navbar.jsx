@@ -62,7 +62,7 @@ function Navbar() {
                 <div className="online">
 
                     <img
-                        src="/images/user-1.png"
+                        src='https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg'
                         alt="user"
                         className="nav-profile-img"
                     />
