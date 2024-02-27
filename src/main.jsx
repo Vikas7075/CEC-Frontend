@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 
 
-export const server = 'http://localhost:4000'
+export const server = 'https://cec-backend.onrender.com'
 export const Context = createContext({
   isAuthenticated: false,
   loading: false,
