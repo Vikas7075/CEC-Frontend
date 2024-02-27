@@ -12,7 +12,13 @@ const Menu = () => {
     const logoutHandler = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.post(`${server}/api/users/logout`, { withCredentials: true });
+            const { data } = await axios.post(`${server}/api/users/logout`, {}, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true
+
+            });
             toast.success("Logged Out Successfully");
             setIsAuthenticated(false);
             toast.success(data.message);

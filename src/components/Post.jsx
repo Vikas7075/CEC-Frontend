@@ -40,9 +40,9 @@ const Post = ({ post }) => {
             <div className="post-stats">
                 <div>
                     <img src="images/thumbsup.png" alt="Thumbs Up" />
-                    <img src="images/love.png" alt="Love" />
-                    <img src="images/clap.png" alt="Clap" />
-                    <span className="liked-users">Abhinav Mishra and 5 others</span>
+                    {/* <img src="images/love.png" alt="Love" />
+                    <img src="images/clap.png" alt="Clap" /> */}
+                    <span className="liked-users">{post.likes.length} Likes</span>
                 </div>
                 <div>
                     {/* <span>22 comments &middot; 30 shares</span> */}

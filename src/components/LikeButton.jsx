@@ -4,7 +4,10 @@ import { Context, server } from '../main';
 import toast from 'react-hot-toast';
 
 const LikeButton = ({ postId }) => {
-    const [liked, setLiked] = useState("");
+    const [liked, setLiked] = useState(() => {
+        // Retrieve liked state from local storage, default to false if not found
+        return localStorage.getItem(`liked_${postId}`) === 'true';
+    });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const { isAuthenticated, setIsAuthenticated } = useContext(Context);
@@ -24,12 +27,19 @@ const LikeButton = ({ postId }) => {
 
             });
             console.log(data)
-            setLiked(data);
-            // Check the message from the backend response
-            if (data.message.includes("liked")) {
-                toast.success("Post liked successfully");
-            } else if (data.message.includes("removed")) {
-                toast.success("Post like removed successfully");
+            if (data.success) {
+                // If the operation was successful, update the liked state based on the message
+                setLiked(data.message.includes("liked"));
+                // Store liked state in local storage
+                localStorage.setItem(`liked_${postId}`, data.message.includes("liked"));
+                if (data.message.includes("liked")) {
+                    toast.success("Post liked successfully");
+                } else if (data.message.includes("removed")) {
+                    toast.success("Post like removed successfully");
+                }
+            } else {
+                // Handle unsuccessful response
+                toast.error("Failed to toggle like");
             }
 
         } catch (error) {
