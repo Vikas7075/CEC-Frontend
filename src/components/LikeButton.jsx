@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Context, server } from '../main';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const LikeButton = ({ postId }) => {
     const [liked, setLiked] = useState(() => {
@@ -12,7 +13,7 @@ const LikeButton = ({ postId }) => {
     const [error, setError] = useState(null);
     const { isAuthenticated, setIsAuthenticated } = useContext(Context);
     console.log(postId)
-
+    const navigate = useNavigate();
     const handleLike = async () => {
         setLoading(true);
         setError(null);
@@ -44,7 +45,7 @@ const LikeButton = ({ postId }) => {
 
         } catch (error) {
             console.error('Error toggling like:', error);
-            toast.error("Failed to toggle like");
+            toast.error("Failed to toggle like, UnAuthorized User!");
             setIsAuthenticated(false);
         } finally {
             setLoading(false);
@@ -52,6 +53,7 @@ const LikeButton = ({ postId }) => {
     };
     return (
         <div>
+            {!isAuthenticated && navigate('/login')}
             <button onClick={handleLike} disabled={loading} style={{ color: liked ? 'blue' : 'inherit' }}>
                 {loading ? 'Loading...' : liked ? 'Liked' : 'Like'}
             </button>

@@ -33,7 +33,8 @@ function App() {
         toast.success(data.message);
         setIsAuthenticated(true);
       } catch (error) {
-        toast.error(error.response.data.message);
+        console.log(error.response.error);
+        toast.error(error.response.data.error);
         setIsAuthenticated(false);
       } finally {
         setLoading(false);

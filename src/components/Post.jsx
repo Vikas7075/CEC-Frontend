@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import moment from 'moment';
 import LikeButton from './LikeButton';
 import { Link, useParams } from 'react-router-dom';
+import { Context } from '../main';
 
 const Post = ({ post }) => {
-
+    const { isAuthenticated, setIsAuthenticated } = useContext(Context);
     const calculateTimeDifference = (createdAt) => {
         const currentTime = moment();
         const postTime = moment(createdAt);
@@ -27,7 +28,11 @@ const Post = ({ post }) => {
             <div className="post-author">
                 <img className='' src={post.user.profilePicture} alt="Author" />
                 <div>
-                    <Link className=' hover:underline' to={`/userdashboard/${post.user._id}`}><h1>{post.user.username}</h1></Link>
+                    {isAuthenticated ? (
+                        <Link className=' hover:underline' to={`/userdashboard/${post.user._id}`}><h1>{post.user.username}</h1></Link>
+                    ) :
+                        (<h1>{post.user.username}</h1>)}
+
 
                     <small>{post.user.headline}</small>
                     <small>{calculateTimeDifference(post.createdAt)}</small>

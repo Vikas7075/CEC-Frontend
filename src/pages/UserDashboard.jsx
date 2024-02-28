@@ -246,7 +246,7 @@ function UserDashboard() {
     }
 
     return (
-        <div className="grid grid-cols-1  gap-6 p-8">
+        <div className="grid grid-cols-1  gap-6 p-0">
             <div className="bg-white border rounded-md shadow-md">
                 <img src={user.profilePicture || 'https://cdn.vectorstock.com/i/preview-1x/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg'} className="w-full h-40 object-cover rounded-t-md" alt="Banner" />
 
@@ -259,9 +259,8 @@ function UserDashboard() {
                     <p className="text-sm">0 followers</p>
 
                     <div className="mt-6 space-x-2">
-                        <button className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">My Connections</button>
-                        <button className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">Messenger</button>
-                        <button className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">More</button>
+                        <button className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">My Network</button>
+                        <button className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">Message</button>
                     </div>
                 </div>
             </div>
@@ -280,16 +279,13 @@ function UserDashboard() {
 
                 <div className="flex space-x-2 mb-4 ml-7">
                     <button className="px-3 py-2 rounded-2xl bg-transparent border hover:bg-blue-100">Posts</button>
-                    <button className="px-3 py-2 rounded-2xl bg-transparent border hover:bg-blue-100">Comments</button>
-                    <button className="px-3 py-2 rounded-2xl bg-transparent border hover:bg-blue-100">Videos</button>
-                    <button className="px-3 py-2 rounded-2xl bg-transparent border hover:bg-blue-100">Images</button>
                 </div>
 
                 <div className=" container justify-center">
                     <div className='post'>
                         {/* Render each post */}
                         {posts.map(post => (
-                            <div key={post._id} className="post w-[500px] border rounded-r-md">
+                            <div key={post._id} className="post md:w-[500px] border rounded-r-md">
                                 <div className="post-author">
                                     <img src={post.user.profilePicture} alt="Author" />
                                     <div>
@@ -304,7 +300,7 @@ function UserDashboard() {
                                 {post.image && <img src={post.image} width="100%" alt="Post" />}
                                 <div className="post-stats">
                                     <div>
-                                        <img src="images/thumbsup.png" alt="Thumbs Up" />
+                                        <img src="/images/thumbsup.png" alt="Thumbs Up" />
                                         <span className="liked-users">{post.likes.length} Likes</span>
                                     </div>
                                     <div>
@@ -586,7 +582,7 @@ function UserDashboard() {
             </div>
 
             <div className="bg-white border rounded-md shadow-md">
-                <h2 className="text-xl font-bold px-6 py-4 border-b">Achievements & Certifications</h2>
+                <h2 className="text-xl font-bold px-6 py-4 border-b">Skills</h2>
                 <div className="px-6 py-4">
                     <ul className="list-group">
                         {user.skills}
