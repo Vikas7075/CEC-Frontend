@@ -304,14 +304,14 @@ function UserDashboard() {
                                 {post.image && <img src={post.image} width="100%" alt="Post" />}
                                 <div className="post-stats">
                                     <div>
-                                        <img src="../../public/images/thumbsup.png" alt="Thumbs Up" />
+                                        <img src="images/thumbsup.png" alt="Thumbs Up" />
                                         <span className="liked-users">{post.likes.length} Likes</span>
                                     </div>
                                     <div>
                                         <span>{post.comments.length} Comments</span>
                                     </div>
                                 </div>
-                                <div>
+                                {/* <div>
                                     {post.comments.map(comment => (
                                         <div key={comment._id} className='comment'>
 
@@ -321,22 +321,22 @@ function UserDashboard() {
                                             </div>
                                         </div>
                                     ))}
-                                </div>
+                                </div> */}
                                 <div className="post-activity">
                                     <div className="post-activity-link">
-                                        <img src="../../public/images/like.png" alt="Like" />
+                                        <img src="/images/like.png" alt="Like" />
                                         <LikeButton postId={post._id} />
                                     </div>
                                     <div className="post-activity-link">
-                                        <img src="../../public/images/comment.png" alt="Comment" />
+                                        <img src="/images/comment.png" alt="Comment" />
                                         <span>Comment</span>
                                     </div>
                                     <div className="post-activity-link">
-                                        <img src="../../public/images/share.png" alt="Share" />
+                                        <img src="/images/share.png" alt="Share" />
                                         <span>Share</span>
                                     </div>
                                     <div className="post-activity-link">
-                                        <img src="../../public/images/send.png" alt="Send" />
+                                        <img src="/images/send.png" alt="Send" />
                                         <span>Send</span>
                                     </div>
                                 </div>
