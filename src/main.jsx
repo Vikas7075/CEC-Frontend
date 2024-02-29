@@ -4,6 +4,7 @@ import App from './App.jsx'
 
 
 export const server = 'https://cec-backend.onrender.com'
+//export const server = 'http://localhost:4000'
 export const Context = createContext({
   isAuthenticated: false,
   loading: false,
