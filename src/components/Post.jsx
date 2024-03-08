@@ -6,9 +6,12 @@ import Comments from './Comments';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { calculateTimeDifference } from '../utils/timeUtils';
+import Loader from './Loader';
+import { handleShare } from '../utils/handleShare';
 
 const Post = ({ post }) => {
-    const { isAuthenticated, setIsAuthenticated, setLoading } = useContext(Context);
+    const { isAuthenticated, setIsAuthenticated } = useContext(Context);
+    const { loading, setLoading } = useContext(Context);
     const [showModal, setShowModal] = useState(false);
     const [comment, setComment] = useState([]);
     const [content, setContent] = useState("");
@@ -61,25 +64,11 @@ const Post = ({ post }) => {
             }
         }
         fetchData();
-    }, [post._id, refresh]);
+    }, [post._id, setLoading]);
 
-    const handleShare = async () => {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: post.title,
-                    text: post.content,
-                    url: window.location.origin + '/post/' + post._id
-                });
-                toast.success("Successfully shared")
-            } catch (error) {
-                console.error("Error sharing:", error);
-                toast.error("Error sharing:", error)
-            }
-        } else {
-            console.log("Web Share API not supported");
-        }
-    };
+    if (loading) {
+        return <Loader />;
+    }
 
     return (
         <div className="post">

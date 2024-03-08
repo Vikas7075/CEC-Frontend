@@ -12,7 +12,7 @@ import Loader from '../components/Loader';
 function Home() {
 
     const [user, setUser] = useState({});
-    const { setIsAuthenticated, setLoading } = useContext(Context);
+    const { isAuthenticated, setIsAuthenticated, setLoading } = useContext(Context);
     // const userId = useParams().id;
     // //const id = "65d819f1604aae6153edf1c8"
     // console.log(userId)
@@ -56,7 +56,9 @@ function Home() {
     if (!user) {
         return <Loader />
     }
-
+    if (!isAuthenticated) {
+        return <Login />;
+    }
 
     return (
         <div className='container'>

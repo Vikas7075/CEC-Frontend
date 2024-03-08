@@ -4,6 +4,7 @@ import Post from './Post';
 import { server } from '../main';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import Loader from './Loader';
 
 const MainContent = () => {
 
@@ -26,7 +27,11 @@ const MainContent = () => {
             }
         };
         fetchData();
-    }, [])
+    }, []);
+
+    if (!data) {
+        return <Loader />
+    }
 
     return (
         <div className="main-content">

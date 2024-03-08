@@ -11,6 +11,7 @@ import { AiFillLike } from "react-icons/ai";
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import LikeButton from '../components/LikeButton';
+import Loader from '../components/Loader';
 
 
 function UserDashboard() {
@@ -40,7 +41,7 @@ function UserDashboard() {
     const [editExperience, setEditExperience] = useState(null);
     const [editEducation, setEditEducation] = useState(null);
 
-    const { setIsAuthenticated, setLoading } = useContext(Context);
+    const { setIsAuthenticated, setLoading,loading } = useContext(Context);
     const userId = useParams().id;
 
     const calculateTimeDifference = (createdAt) => {
@@ -61,7 +62,7 @@ function UserDashboard() {
     useEffect(() => {
         fetchData();
         fetPostById()
-    }, [userId, refresh])  // Fetch data whenever userId changes
+    }, [userId, refresh,setLoading])  // Fetch data whenever userId changes
 
     const fetchData = async () => {
         setLoading(true);
@@ -285,8 +286,8 @@ function UserDashboard() {
     }
     console.log(chatId)
     // Check if user exists before rendering
-    if (!user) {
-        return <div>Loading...</div>;
+    if (loading) {
+        return  <Loader/>;
     }
 
     return (

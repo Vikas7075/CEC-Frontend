@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
 import Menu from './Menu'
 import { Context } from '../main';
+import { Link } from 'react-router-dom';
 
 function Navbar() {
 
     const [menu, setMenu] = useState(false);
-    const { user } = useContext(Context);
+    const { user, isAuthenticated } = useContext(Context);
 
     const showMenu = () => {
         setMenu(!menu);
@@ -35,10 +36,14 @@ function Navbar() {
                         </a>
                     </li>
                     <li>
-                        <a href="/mynetwork">
+                        {isAuthenticated ? (<Link to="/mynetwork">
                             <img src="/images/network.png" alt="network" />
                             <span>My Network</span>
-                        </a>
+                        </Link>) : (<Link to="#">
+                            <img src="/images/network.png" alt="network" />
+                            <span>My Network</span>
+                        </Link>)}
+
                     </li>
                     <li>
                         <a href="#">
@@ -47,10 +52,14 @@ function Navbar() {
                         </a>
                     </li>
                     <li>
-                        <a href="/mymessage">
+                        {isAuthenticated ? (<Link to="/mymessage">
                             <img src="/images/message.png" alt="message" />
                             <span>Message</span>
-                        </a>
+                        </Link>) : (<Link to="#">
+                            <img src="/images/message.png" alt="message" />
+                            <span>Message</span>
+                        </Link>)}
+
                     </li>
                     <li>
                         <a href="#">

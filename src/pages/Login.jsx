@@ -9,6 +9,7 @@ function login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [pstatus, setPstatus] = useState(false);
 
     const { isAuthenticated, setIsAuthenticated, loading, setLoading } = useContext(Context);
 
@@ -65,7 +66,7 @@ function login() {
                             <div>
                                 {/* <label for="password" class="block text-sm font-medium text-gray-700 dark:text-white">Password</label> */}
                                 <div className="mt-1">
-                                    <input id="password" name="password" type="password" data-testid="password"
+                                    <input id="password" name="password" type={pstatus ? 'text' : 'password'} data-testid="password"
                                         autocomplete="current-password" required="" placeholder='Password'
                                         className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-300 dark:focus:border-indigo-400 dark:focus:ring-indigo-400 sm:text-sm"
                                         value={password} onChange={(e) => setPassword(e.target.value)} />
@@ -73,9 +74,9 @@ function login() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center">
-                                    <input id="remember_me" name="remember_me" type="checkbox"
-                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:text-white dark:border-gray-600 dark:focus:ring-indigo-400 disabled:cursor-wait disabled:opacity-50" />
-                                    <label for="remember_me" class="ml-2 block text-sm text-gray-900 dark:text-white">Remember me</label>
+                                    <input id="remember_me" name="remember_me" type="checkbox" onClick={() => setPstatus(!pstatus)}
+                                        className="h-4 w-4 rounded border-gray-300 cursor-pointer text-indigo-600 focus:ring-indigo-500 dark:text-white dark:border-gray-600 dark:focus:ring-indigo-400 disabled:cursor-wait disabled:opacity-50" />
+                                    <label for="remember_me" class="ml-2 block text-sm text-gray-900 dark:text-white">{pstatus ? 'Hide Password' : 'Show Password'}</label>
                                 </div>
                                 <div className="text-sm">
                                     <a className="font-medium text-indigo-400 hover:text-indigo-500" href="">

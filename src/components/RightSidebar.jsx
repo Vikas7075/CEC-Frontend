@@ -2,25 +2,28 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { Context, server } from '../main';
 import { Link } from 'react-router-dom';
+import Loader from './Loader';
 
 // SidebarNews component
 const SidebarNews = () => {
     const [users, setUsers] = useState([]);
-    const { isAuthenticated, setIsAuthenticated, setLoading } = useContext(Context);
+    const { isAuthenticated, setIsAuthenticated, setLoading, loading } = useContext(Context);
 
     useEffect(() => {
         const getAllUsers = async () => {
+            setLoading(true)
             try {
                 const response = await axios.get(`${server}/api/users/all/users`, {
                     withCredentials: true
                 });
                 setUsers(response.data.reverse());
             } catch (error) {
-                console.log(error)
+                console.log(error);
+                setLoading(false)
             }
         };
         getAllUsers();
-    }, []);
+    }, [setLoading]);
 
     const sliceHeadline = (headline, maxLength) => {
         if (headline.length > maxLength) {
@@ -29,6 +32,9 @@ const SidebarNews = () => {
         return headline;
     }
     const recentUsers = users.slice(0, 8);
+    if (loading) {
+        return <Loader />
+    }
     return (
         <div className="sidebar-news">
             <img src="./images/more.png" className="info-icon" alt="Info" />
