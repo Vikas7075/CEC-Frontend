@@ -6,9 +6,7 @@ import toast from 'react-hot-toast';
 
 const Menu = () => {
 
-    const { isAuthenticated, setIsAuthenticated, loading, setLoading } = useContext(Context);
-    const [user, setUser] = useState({});
-
+    const { user, isAuthenticated, setIsAuthenticated, loading, setLoading } = useContext(Context);
     const logoutHandler = async () => {
         setLoading(true);
         try {
@@ -19,7 +17,6 @@ const Menu = () => {
                 withCredentials: true
 
             });
-            toast.success("Logged Out Successfully");
             setIsAuthenticated(false);
             toast.success(data.message);
             setLoading(false);
@@ -34,7 +31,13 @@ const Menu = () => {
     return (
         <div className="bg-black w-[200px] flex flex-col items-center absolute top-12 right-2 md:right-5 rounded-md p-4 space-y-1">
 
-            {isAuthenticated ? (<Link to={"/userdashboard"} className="text-white text-sm hover:text-gray-500 cursor-pointer">User Profile</Link>) :
+            {isAuthenticated ? (
+                <>
+                    <Link to={`/userdashboard/${user._id}`} className="text-white hover:underline text-sm hover:text-gray-500 cursor-pointer">View Profile</Link>
+
+                </>
+
+            ) :
                 (< Link to="/register" className="text-white text-sm hover:text-gray-500 cursor-pointer">Register</Link>)
             }
 

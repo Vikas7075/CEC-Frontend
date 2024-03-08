@@ -3,7 +3,7 @@ import Post from '../components/Post';
 import { Context, server } from '../main';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FaPlus } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
@@ -19,6 +19,10 @@ function UserDashboard() {
     const [experienceData, setExperienceData] = useState([]);
     const [posts, setPosts] = useState([]);
     const [modalType, setModalType] = useState("");
+    const [chats, setChats] = useState([]);
+    const [chatId, setChatId] = useState("");
+    const [refresh, setRefresh] = useState(false);
+    const navigate = useNavigate();
     const [newExperience, setNewExperience] = useState({
         position: '',
         company: '',
@@ -38,9 +42,6 @@ function UserDashboard() {
 
     const { setIsAuthenticated, setLoading } = useContext(Context);
     const userId = useParams().id;
-    // //const id = "65d819f1604aae6153edf1c8"
-    // console.log(userId)
-    console.log(userId)
 
     const calculateTimeDifference = (createdAt) => {
         const currentTime = moment();
@@ -60,7 +61,7 @@ function UserDashboard() {
     useEffect(() => {
         fetchData();
         fetPostById()
-    }, [userId])  // Fetch data whenever userId changes
+    }, [userId, refresh])  // Fetch data whenever userId changes
 
     const fetchData = async () => {
         setLoading(true);
@@ -90,7 +91,6 @@ function UserDashboard() {
 
 
             setEducationData(eduResponse.data.education);
-            console.log(eduResponse.data.education)
 
             const expResponse = await axios.get(`${server}/api/experiance/${userId}`, {
                 headers: {
@@ -100,8 +100,6 @@ function UserDashboard() {
             });
 
             setExperienceData(expResponse.data.experience);
-            console.log(expResponse.data);
-
         } catch (error) {
             toast.error(error.response.data.message);
             setIsAuthenticated(false);
@@ -125,8 +123,6 @@ function UserDashboard() {
         }
     }
 
-    //console.log(user)
-
     const handleEducationSubmit = async (e) => {
         e.preventDefault();
 
@@ -140,6 +136,7 @@ function UserDashboard() {
             setEducationData([...educationData, response.data]);
             toast.success("Education added successfully");
             setShowModal(false);
+            setRefresh((prev) => !prev);
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
@@ -156,6 +153,7 @@ function UserDashboard() {
             });
             setExperienceData(educationData.filter(edu => edu._id !== educationId));
             toast.success("Education deleted successfully");
+            setRefresh((prev) => !prev);
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
@@ -171,12 +169,11 @@ function UserDashboard() {
                 },
                 withCredentials: true
             });
-            // Update experienceData with the modified experience details
+
             setEducationData(educationData.map(edu => (edu._id === editEducation._id ? response.data : edu)));
             toast.success("Education updated successfully");
-            // Clear the editExperience state and close the edit form
-            console.log(response.data)
-            //setEditExperience(null);
+            setShowModal(false);
+            setRefresh((prev) => !prev);
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
@@ -195,7 +192,8 @@ function UserDashboard() {
             });
             setExperienceData([...experienceData, response.data]);
             toast.success("Experience added successfully");
-            setShowModal(false);  // Close the modal after adding experience
+            setShowModal(false);
+            setRefresh((prev) => !prev);
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
@@ -212,6 +210,7 @@ function UserDashboard() {
             });
             setExperienceData(experienceData.filter(exp => exp._id !== experienceId));
             toast.success("Experience deleted successfully");
+            setRefresh((prev) => !prev);
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
@@ -230,16 +229,61 @@ function UserDashboard() {
             // Update experienceData with the modified experience details
             setExperienceData(experienceData.map(exp => (exp._id === editExperience._id ? response.data : exp)));
             toast.success("Experience updated successfully");
-            // Clear the editExperience state and close the edit form
-            console.log(response.data)
-            //setEditExperience(null);
+            setShowModal(false);
+            setRefresh((prev) => !prev);
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
         }
     };
 
+    useEffect(() => {
+        async function fetchChats() {
+            setLoading(true);
+            try {
+                const response = await axios.get(`${server}/api/messages/chats`, {
+                    withCredentials: true
+                });
+                setChats(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching chats:', error);
+                setLoading(false);
+            }
+        }
+        fetchChats();
+    }, []);
 
+
+    const handleCreateChat = async () => {
+        try {
+            const response = await axios.get(`${server}/api/messages/chats`, {
+                withCredentials: true
+            });
+
+            // Check if an existing chat with the user exists
+            const existingChat = response.data.find(chat => chat.participants.includes(user._id));
+            if (existingChat) {
+                navigate(`/chat/${existingChat._id}`);
+            } else {
+                const response = await axios.post(`${server}/api/messages/chats`, { participant: user._id }, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    withCredentials: true
+                });
+                const newChatId = response.data._id;
+                setChatId(newChatId);
+                navigate(`/chat/${newChatId}`);
+            }
+
+        } catch (error) {
+            navigate("/mymessage");
+            toast.error("Failed to load chat");
+            console.log(error)
+        }
+    }
+    console.log(chatId)
     // Check if user exists before rendering
     if (!user) {
         return <div>Loading...</div>;
@@ -260,7 +304,7 @@ function UserDashboard() {
 
                     <div className="mt-6 space-x-2">
                         <button className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">My Network</button>
-                        <button className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">Message</button>
+                        <button onClick={handleCreateChat} className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">Message</button>
                     </div>
                 </div>
             </div>

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Menu from './Menu'
+import { Context } from '../main';
 
 function Navbar() {
 
     const [menu, setMenu] = useState(false);
+    const { user } = useContext(Context);
 
     const showMenu = () => {
         setMenu(!menu);
@@ -33,7 +35,7 @@ function Navbar() {
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="/mynetwork">
                             <img src="/images/network.png" alt="network" />
                             <span>My Network</span>
                         </a>
@@ -45,7 +47,7 @@ function Navbar() {
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="/mymessage">
                             <img src="/images/message.png" alt="message" />
                             <span>Message</span>
                         </a>
@@ -62,7 +64,7 @@ function Navbar() {
                 <div className="online">
 
                     <img
-                        src='https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg'
+                        src={user.profilePicture}
                         alt="user"
                         className="nav-profile-img"
                     />

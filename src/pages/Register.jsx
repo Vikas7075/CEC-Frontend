@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Context, server } from '../main';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function RegisterForm() {
 
@@ -11,7 +11,7 @@ function RegisterForm() {
     const [error, setError] = useState(false);
     const { isAuthenticated, setIsAuthenticated, loading, setLoading } = useContext(Context);
 
-    console.log(isAuthenticated)
+
 
     const [formData, setFormData] = useState({
         country: '',
@@ -52,56 +52,93 @@ function RegisterForm() {
         }));
     };
 
+    const validateForm = () => {
+        // Add your form validation logic here
+        if (step === 1) {
+            if (!formData.country || !formData.city) {
+                setError(true);
+                return false;
+            }
+        } else if (step === 2) {
+            if (!formData.profilePicture || !formData.username || !formData.email || !formData.password || !formData.bio || !formData.headline || !formData.userType) {
+                setError(true);
+                return false;
+            }
+        } else if (step === 3 && formData.userType === 'student') {
+            if (!formData.college || !formData.degree || !formData.startDate || !formData.endDate) {
+                setError(true);
+                return false;
+            }
+        } else if (step === 3 && formData.userType === 'professional') {
+            if (!formData.currentEmployee || !formData.designation || !formData.startDate) {
+                setError(true);
+                return false;
+            }
+        } else if (step === 4) {
+            if (!formData.skills || !formData.achievments) {
+                setError(true);
+                return false;
+            }
+        }
+        setError(false);
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (step === 4) {
-            try {
-                const formDataToSend = new FormData();
-                Object.entries(formData).forEach(([key, value]) => {
-                    formDataToSend.append(key, value);
+        if (validateForm()) {
+            if (step === 4) {
+                try {
+                    const formDataToSend = new FormData();
+                    Object.entries(formData).forEach(([key, value]) => {
+                        formDataToSend.append(key, value);
+                    });
+                    const { data } = await axios.post(`${server}/api/users/`, formDataToSend);
+                    console.log(data.message);
+                    console.log(data);
+                    toast.success(data.message);
+                    setIsAuthenticated(true);
+                    navigate('/');
+                } catch (error) {
+                    toast.error(error.response.data.message);
+                    console.log(error.response.data.message);
+                    setIsAuthenticated(false);
+                }
+                // Submit the form data
+                console.log(formData);
+                // Reset the form data
+                setFormData({
+                    country: '',
+                    city: '',
+                    profilePicture: null,
+                    username: '',
+                    email: '',
+                    password: '',
+                    userType: '',
+                    collegeName: '',
+                    degreeName: '',
+                    startDate: '',
+                    endDate: '',
+                    currentEmployee: '',
+                    company: '',
+                    dob: '',
+                    gender: '',
+                    bio: '',
+                    headline: '',
+                    designation: '',
+                    skills: '',
+                    achievments: ''
                 });
-                const { data } = await axios.post(`${server}/api/users/`, formDataToSend);
-                console.log(data.message);
-                console.log(data);
-                toast.success(data.message);
-                setIsAuthenticated(true);
-                navigate("/");
-            } catch (error) {
-                toast.error(error.response.data.message);
-                console.log(error.response.data.message);
-                setIsAuthenticated(false);
+                // Reset the step
+                setStep(1);
+                // You can perform additional actions like sending the data to the server or displaying a success message
+            } else {
+                setStep(prevStep => prevStep + 1);
             }
-            // Submit the form data
-            console.log(formData);
-            // Reset the form data
-            setFormData({
-                country: '',
-                city: '',
-                profilePicture: null,
-                username: '',
-                email: '',
-                password: '',
-                userType: '',
-                collegeName: '',
-                degreeName: '',
-                startDate: '',
-                endDate: '',
-                currentEmployee: '',
-                company: '',
-                dob: '',
-                gender: '',
-                bio: '',
-                headline: '',
-                designation: '',
-                skills: '',
-                achievments: ''
-            });
-            // Reset the step
-            setStep(1);
-            // You can perform additional actions like sending the data to the server or displaying a success message
         } else {
-            setStep(prevStep => prevStep + 1);
+            toast.error("Fill required details")
         }
+
     };
 
     return (

@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 const LeftSidebar = ({ user }) => {
-    console.log(user)
     const toggleActivity = () => {
         // Define your toggleActivity function logic here
     };
@@ -20,24 +19,17 @@ const LeftSidebar = ({ user }) => {
                     <p>{user.country}, {user.city}</p>
                     <ul>
                         <li>
-                            Your profile views <span>1</span>
+                            Your connections <span>10+</span>
                         </li>
                         <li>
-                            Your post views <span>1</span>
-                        </li>
-                        <li>
-                            Your connections <span>1+</span>
+                            Your post views <span>10+</span>
                         </li>
                     </ul>
                 </div>
-                <div className="sidebar-profile-link">
+                <div className="sidebar-profile-link justify-start">
                     <a href="#">
                         <img src="./images/items.png" alt="items" />
                         My items
-                    </a>
-                    <a href="#">
-                        <img src="./images/premium.png" alt="premium" />
-                        Try Premium
                     </a>
                 </div>
             </div>

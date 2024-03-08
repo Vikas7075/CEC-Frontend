@@ -1,15 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CreatePost from './CreatePost';
 import Post from './Post';
-import { Context, server } from '../main';
+import { server } from '../main';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const MainContent = () => {
 
-    const { setIsAuthenticated, setLoading } = useContext(Context);
     const [data, setData] = useState([]);
-    const [newPost, setNewPost] = useState(null);
-    const [postUser, setPostUser] = useState(null);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -20,20 +18,15 @@ const MainContent = () => {
                     },
                     withCredentials: true
                 });
-                setData(response.data.posts);
-                console.log(response.data)
+                setData(response.data.posts.reverse());
 
             } catch (error) {
                 console.error('Error getting post:', error);
-                // Handle error if submission fails
+                toast.error(error);
             }
         };
         fetchData();
     }, [])
-
-
-    // console.log(newPost);
-    // console.log(postUser);
 
     return (
         <div className="main-content">

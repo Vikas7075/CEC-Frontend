@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import moment from 'moment';
 import LikeButton from './LikeButton';
 import { Link, useParams } from 'react-router-dom';
 import { Context, server } from '../main';
@@ -14,7 +13,13 @@ const Post = ({ post }) => {
     const [comment, setComment] = useState([]);
     const [content, setContent] = useState("");
     const [refresh, setRefresh] = useState(false);
+    const [showFullContent, setShowFullContent] = useState(false);
 
+    const maxContentLength = 180;
+    const truncatedContent = post.content.length > maxContentLength ? post.content.slice(0, maxContentLength) + "..." : post.content;
+    const toggleContent = () => {
+        setShowFullContent(!showFullContent);
+    };
 
     const addComment = async (e) => {
         e.preventDefault();
@@ -46,8 +51,8 @@ const Post = ({ post }) => {
                         "Content-Type": "application/json"
                     },
                 });
-                console.log(data.comments)
-                setComment(data.comments);
+                const reversedComments = data.comments.reverse();
+                setComment(reversedComments);
                 setRefresh((prev) => !prev);
             } catch (error) {
                 toast.error(error.response.data.message);
@@ -57,6 +62,24 @@ const Post = ({ post }) => {
         }
         fetchData();
     }, [post._id, refresh]);
+
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: post.title,
+                    text: post.content,
+                    url: window.location.origin + '/post/' + post._id
+                });
+                toast.success("Successfully shared")
+            } catch (error) {
+                console.error("Error sharing:", error);
+                toast.error("Error sharing:", error)
+            }
+        } else {
+            console.log("Web Share API not supported");
+        }
+    };
 
     return (
         <div className="post">
@@ -74,8 +97,18 @@ const Post = ({ post }) => {
                     <small>{calculateTimeDifference(post.createdAt)}</small>
                 </div>
             </div>
-            <p>{post.content}</p>
-            {post.image && <img src={post.image} width="100%" alt="Post" />}
+            <p>
+                {showFullContent ? post.content : truncatedContent}
+                {post.content.length > maxContentLength && !showFullContent && (
+                    <span className="text-blue-500 cursor-pointer" onClick={toggleContent}>Read More</span>
+                )}
+            </p>
+            {post.image && (
+                <div className='image-container w-full max-w-full h-auto'>
+                    <img src={post.image} alt="Post" />
+                </div>
+            )}
+
             <div className="post-stats">
                 <div>
                     <img src="images/thumbsup.png" alt="Thumbs Up" />
@@ -94,14 +127,14 @@ const Post = ({ post }) => {
                     <img src="images/comment.png" alt="Comment" />
                     <button onClick={() => setShowModal(!showModal)}><span>Comment</span></button>
                 </div>
-                <div className="post-activity-link">
+                <div className="post-activity-link hover:cursor-pointer" onClick={handleShare}>
                     <img src="images/share.png" alt="Share" />
                     <span>Share</span>
                 </div>
-                <div className="post-activity-link">
+                {/* <div className="post-activity-link">
                     <img src="images/send.png" alt="Send" />
                     <span>Send</span>
-                </div>
+                </div> */}
             </div>
             {showModal && (
                 <>

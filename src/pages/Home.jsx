@@ -30,7 +30,6 @@ function Home() {
                 });
                 console.log(data.user)
                 setUser(data.user);
-                toast.success(data.user.message);
                 setIsAuthenticated(true);
 
                 // // Fetch education details for each education ID

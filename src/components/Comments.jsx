@@ -19,8 +19,7 @@ function Comments({ comment }) {
                         </div>
 
                         <div className="text-gray-600 text-sm font-light">{comment.user.headline}</div>
-                        <div className="mt-2 text-black font-normal">{comment.content}
-                        </div>
+                        <div className="mt-2 text-black font-normal">{comment.content}</div>
                     </div>
                 </div>
 

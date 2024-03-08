@@ -125,24 +125,26 @@ a {
 .container {
   padding: 20px 6%;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+
 }
 
 /* ------left-sidebar----- */
 .left-sidebar {
-  flex-basis: 25%;
-  align-items: flex-start;
+  flex: 0 0 250px;
+  position: fixed;
+  left: 6%;
+  top: 73px;
+  bottom: 0;
 
 }
 
 .sidebar-profile-box {
   background: #fff;
-
 }
 
 .sidebar-profile-info {
   padding: 0 25px;
+  width: 310px;
 }
 
 .sidebar-profile-info img {
@@ -247,11 +249,11 @@ a {
 
 /* ------right-sidebar----- */
 .right-sidebar {
-  flex-basis: 25%;
-  align-items: flex-start;
-  position: sticky;
+  flex: 0 0 250px;
+  position: fixed;
+  right: 6%;
   top: 73px;
-
+  bottom: 0;
 }
 
 .sidebar-news {
@@ -327,7 +329,9 @@ a {
 
 /* -------main-content----- */
 .main-content {
-  flex-basis: 47%;
+  flex: 1;
+  margin-left: 326px;
+  margin-right: 206px
 }
 
 .create-post {
@@ -551,18 +555,27 @@ a {
 
   .container {
     padding: 15px 0%;
+    flex-direction: column;
 
   }
 
-  .left-sidebar,
+  .left-sidebar {
+    flex-basis: 100%;
+    position: relative;
+    left: 0%;
+    top: unset;
+  }
+
   .right-sidebar {
     flex-basis: 100%;
     position: relative;
+    right: 0%;
     top: unset;
   }
 
   .main-content {
-    flex-basis: 100%;
+    flex: 0 0 100%;
+    margin: 0;
   }
 
   .post-stats div {

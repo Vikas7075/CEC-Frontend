@@ -52,7 +52,7 @@ function login() {
                             <div>
                                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                                     Sign in
-                                </h1>Name
+                                </h1>
                                 <p className='text-[15px] mb-3 mt-1'>Stay updated on your professional world</p>
                                 {/* <label for="email" class="block text-sm font-medium text-gray-700 dark:text-white">Email address /
                                     Username</label> */}
@@ -104,12 +104,12 @@ function login() {
                                 <div className="absolute inset-0 flex items-center">
                                     <div className="w-full border-t border-gray-300"></div>
                                 </div>
-                                <div className="relative flex justify-center text-sm">
+                                {/* <div className="relative flex justify-center text-sm">
                                     <span className="bg-white dark:bg-gray-700 px-2 text-gray-500 dark:text-white">Or continue with</span>
-                                </div>
+                                </div> */}
                             </div>
                             <div className="mt-6 grid grid-cols-1 gap-3">
-                                <button
+                                {/* <button
                                     className="inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-500 dark:text-white shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 disabled:cursor-wait disabled:opacity-50">
                                     <span className="sr-only">Sign in with Google</span>
                                     <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -126,7 +126,7 @@ function login() {
                                                 fill-rule="evenodd"></path>
                                         </g>
                                     </svg>
-                                </button>
+                                </button> */}
                                 {/* <button
                                     class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-500 dark:text-white shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 disabled:cursor-wait disabled:opacity-50">
                                     <span class="sr-only">Sign in with GitHub</span>

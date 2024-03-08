@@ -12,7 +12,7 @@ const LikeButton = ({ postId }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const { isAuthenticated, setIsAuthenticated } = useContext(Context);
-    console.log(postId)
+
     const navigate = useNavigate();
     const handleLike = async () => {
         setLoading(true);
@@ -27,7 +27,6 @@ const LikeButton = ({ postId }) => {
                 withCredentials: true
 
             });
-            console.log(data)
             if (data.success) {
                 // If the operation was successful, update the liked state based on the message
                 setLiked(data.message.includes("liked"));

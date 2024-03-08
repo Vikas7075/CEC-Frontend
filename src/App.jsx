@@ -11,6 +11,9 @@ import { Context, server } from './main.jsx'
 import axios from 'axios'
 import toast, { Toaster } from 'react-hot-toast'
 import PageNotFound from './components/PageNotFound.jsx'
+import Network from './pages/Network.jsx'
+import Message from './pages/Message.jsx'
+import ChatList from './components/ChatList.jsx'
 
 function App() {
 
@@ -21,16 +24,15 @@ function App() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get(`${server}/api/users/`, {
+        const { data } = await axios.get(`${server}/api/users`, {
           headers: {
             "Content-Type": "application/json"
           },
           withCredentials: true
 
         });
-        console.log(data)
-        setUser(data.data);
-        toast.success(data.message);
+        setUser(data.user);
+        toast.success(data.success);
         setIsAuthenticated(true);
       } catch (error) {
         console.log(error.response.error);
@@ -43,7 +45,6 @@ function App() {
     fetchData();
 
   }, []);
-  console.log(user);
   return (
 
     <>
@@ -57,6 +58,9 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/userdashboard/:id' element={<UserDashboard />} />
+          <Route path='/mynetwork' element={<Network />} />
+          <Route path='/mymessage' element={<Message />} />
+          <Route path='/chat/:chatId' element={<ChatList />} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
         <Toaster />
