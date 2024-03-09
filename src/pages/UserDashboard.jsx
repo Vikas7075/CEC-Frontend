@@ -15,7 +15,7 @@ import Loader from '../components/Loader';
 
 
 function UserDashboard() {
-    const [user, setUser] = useState({});
+    const [users, setUser] = useState({});
     const [educationData, setEducationData] = useState([]);
     const [experienceData, setExperienceData] = useState([]);
     const [posts, setPosts] = useState([]);
@@ -41,7 +41,7 @@ function UserDashboard() {
     const [editExperience, setEditExperience] = useState(null);
     const [editEducation, setEditEducation] = useState(null);
 
-    const { setIsAuthenticated, setLoading,loading } = useContext(Context);
+    const { user, isAuthenticated, setIsAuthenticated, setLoading, loading } = useContext(Context);
     const userId = useParams().id;
 
     const calculateTimeDifference = (createdAt) => {
@@ -62,7 +62,7 @@ function UserDashboard() {
     useEffect(() => {
         fetchData();
         fetPostById()
-    }, [userId, refresh,setLoading])  // Fetch data whenever userId changes
+    }, [userId, refresh, setLoading])  // Fetch data whenever userId changes
 
     const fetchData = async () => {
         setLoading(true);
@@ -263,11 +263,11 @@ function UserDashboard() {
             });
 
             // Check if an existing chat with the user exists
-            const existingChat = response.data.find(chat => chat.participants.includes(user._id));
+            const existingChat = response.data.find(chat => chat.participants.includes(users._id));
             if (existingChat) {
                 navigate(`/chat/${existingChat._id}`);
             } else {
-                const response = await axios.post(`${server}/api/messages/chats`, { participant: user._id }, {
+                const response = await axios.post(`${server}/api/messages/chats`, { participant: users._id }, {
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -287,20 +287,20 @@ function UserDashboard() {
     console.log(chatId)
     // Check if user exists before rendering
     if (loading) {
-        return  <Loader/>;
+        return <Loader />;
     }
 
     return (
         <div className="grid grid-cols-1  gap-6 p-0">
             <div className="bg-white border rounded-md shadow-md">
-                <img src={user.profilePicture || 'https://cdn.vectorstock.com/i/preview-1x/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg'} className="w-full h-40 object-cover rounded-t-md" alt="Banner" />
+                <img src={users.profilePicture || 'https://cdn.vectorstock.com/i/preview-1x/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg'} className="w-full h-40 object-cover rounded-t-md" alt="Banner" />
 
                 <div className="px-6 py-4">
-                    <img src={user.profilePicture || 'https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg'} alt="Profile" className="w-20 h-20 object-cover rounded-full mb-4" />
-                    <p className="font-bold text-xl">{user.username}</p>
-                    <p className="text-gray-600">{user.headline}</p>
+                    <img src={users.profilePicture || 'https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg'} alt="Profile" className="w-20 h-20 object-cover rounded-full mb-4" />
+                    <p className="font-bold text-xl">{users.username}</p>
+                    <p className="text-gray-600">{users.headline}</p>
 
-                    <p className="text-sm"><span>{user.country}</span> <span>{user.city}</span></p>
+                    <p className="text-sm"><span>{users.country}</span> <span>{users.city}</span></p>
                     <p className="text-sm">0 followers</p>
 
                     <div className="mt-6 space-x-2">
@@ -375,10 +375,6 @@ function UserDashboard() {
                                     <div className="post-activity-link">
                                         <img src="/images/share.png" alt="Share" />
                                         <span>Share</span>
-                                    </div>
-                                    <div className="post-activity-link">
-                                        <img src="/images/send.png" alt="Send" />
-                                        <span>Send</span>
                                     </div>
                                 </div>
                             </div>
@@ -541,13 +537,15 @@ function UserDashboard() {
                 <div className=' flex justify-between'>
                     <h2 className="text-xl font-bold px-6 py-4 border-b">Experience</h2>
                     {/* Button to add new experience */}
+                    {isAuthenticated && user._id === userId && (
+                        <div className="flex items-center gap-2 mr-8">
+                            <button onClick={() => { setShowModal(true); setModalType('experience') }} className="flex items-center px-4 py-2 rounded-md font-bold border text-blue-500 bg-transparent hover:bg-blue-600">
+                                <FaPlus className="mr-2" />
+                                ADD
+                            </button>
+                        </div>
+                    )}
 
-                    <div className="flex items-center gap-2 mr-8">
-                        <button onClick={() => { setShowModal(true); setModalType('experience') }} className="flex items-center px-4 py-2 rounded-md font-bold border text-blue-500 bg-transparent hover:bg-blue-600">
-                            <FaPlus className="mr-2" />
-                            ADD
-                        </button>
-                    </div>
                 </div>
 
                 <div className="px-6 py-4">
@@ -564,14 +562,19 @@ function UserDashboard() {
                                                 {new Date(exp.start_date).toLocaleDateString()} - {new Date(exp.end_date).toLocaleDateString()}
 
                                             </p>
-                                            <div className="flex items-center gap-2 mr-8 mt-3">
-                                                <button onClick={() => handleDeleteExperience(exp._id)} className="flex items-center px-4 py-2 rounded-md font-bold border text-red-500 bg-transparent hover:bg-red-600">
-                                                    <MdDelete className="mr-2" />
-                                                </button>
-                                                <button onClick={() => setEditExperience(exp)} className="flex items-center px-4 py-2 rounded-md font-bold border text-yellow-500 bg-transparent hover:bg-yellow-600">
-                                                    <FaEdit className="mr-2" />
-                                                </button>
-                                            </div>
+                                            {
+                                                isAuthenticated && user._id === exp.user && (
+                                                    <div className="flex items-center gap-2 mr-8 mt-3">
+                                                        <button onClick={() => handleDeleteExperience(exp._id)} className="flex items-center px-4 py-2 rounded-md font-bold border text-red-500 bg-transparent hover:bg-red-600">
+                                                            <MdDelete className="mr-2" />
+                                                        </button>
+                                                        <button onClick={() => setEditExperience(exp)} className="flex items-center px-4 py-2 rounded-md font-bold border text-yellow-500 bg-transparent hover:bg-yellow-600">
+                                                            <FaEdit className="mr-2" />
+                                                        </button>
+                                                    </div>
+                                                )
+                                            }
+
                                         </div>
                                     ))}
                                 </ol>
@@ -589,12 +592,15 @@ function UserDashboard() {
             <div className="bg-white border rounded-md shadow-md">
                 <div className=' flex justify-between'>
                     <h2 className="text-xl font-bold px-6 py-4 border-b">Education</h2>
-                    <div className="flex items-center gap-2 mr-8">
-                        <button onClick={() => { setShowModal(true); setModalType('education') }} className="flex items-center px-4 py-2 rounded-md font-bold border text-blue-500 bg-transparent hover:bg-blue-600">
-                            <FaPlus className="mr-2" />
-                            ADD
-                        </button>
-                    </div>
+                    {isAuthenticated && user._id === userId && (
+                        <div className="flex items-center gap-2 mr-8">
+                            <button onClick={() => { setShowModal(true); setModalType('education') }} className="flex items-center px-4 py-2 rounded-md font-bold border text-blue-500 bg-transparent hover:bg-blue-600">
+                                <FaPlus className="mr-2" />
+                                ADD
+                            </button>
+                        </div>
+                    )}
+
                 </div>
 
                 <div className="px-6 py-4">
@@ -603,19 +609,25 @@ function UserDashboard() {
                             <ol className="list-decimal">
                                 {educationData.map((edu, index) => (
                                     <div key={index} className="mb-4">
-                                        <h3 className="font-semibold">{edu.degree}</h3>
-                                        <p className="text-gray-600">{edu.institution}</p>
+                                        <h3 className="font-semibold">{edu.institution}</h3>
+                                        <p className="text-gray-600">{edu.degree}</p>
                                         <p className="text-gray-500">
                                             {new Date(edu.start_date).toLocaleDateString()} - {new Date(edu.end_date).toLocaleDateString()}
                                         </p>
-                                        <div className="flex items-center gap-2 mr-8 mt-3">
-                                            <button onClick={() => handleDeleteEducation(edu._id)} className="flex items-center px-4 py-2 rounded-md font-bold border text-red-500 bg-transparent hover:bg-red-600">
-                                                <MdDelete className="mr-2" />
-                                            </button>
-                                            <button onClick={() => setEditEducation(edu)} className="flex items-center px-4 py-2 rounded-md font-bold border text-yellow-500 bg-transparent hover:bg-yellow-600">
-                                                <FaEdit className="mr-2" />
-                                            </button>
-                                        </div>
+
+                                        {isAuthenticated && user._id === edu.user && (
+
+                                            <div className="flex items-center gap-2 mr-8 mt-3">
+                                                <button onClick={() => handleDeleteEducation(edu._id)} className="flex items-center px-4 py-2 rounded-md font-bold border text-red-500 bg-transparent hover:bg-red-600">
+                                                    <MdDelete className="mr-2" />
+                                                </button>
+                                                <button onClick={() => setEditEducation(edu)} className="flex items-center px-4 py-2 rounded-md font-bold border text-yellow-500 bg-transparent hover:bg-yellow-600">
+                                                    <FaEdit className="mr-2" />
+                                                </button>
+                                            </div>
+
+                                        )}
+
                                     </div>
                                 ))}
                             </ol>
@@ -630,7 +642,7 @@ function UserDashboard() {
                 <h2 className="text-xl font-bold px-6 py-4 border-b">Skills</h2>
                 <div className="px-6 py-4">
                     <ul className="list-group">
-                        {user.skills}
+                        {users.skills}
                     </ul>
                 </div>
             </div>

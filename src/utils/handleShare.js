@@ -1,10 +1,12 @@
-export const handleShare = async () => {
+import toast from "react-hot-toast";
+
+export const handleShare = async (postId) => {
     if (navigator.share) {
         try {
             await navigator.share({
                 title: post.title,
                 text: post.content,
-                url: window.location.origin + '/post/' + post._id
+                url: window.location.origin + '/post/' + postId
             });
             toast.success("Successfully shared")
         } catch (error) {

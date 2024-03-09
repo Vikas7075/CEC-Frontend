@@ -11,10 +11,11 @@ const ProfileCard = ({ user, sendConnectionRequest }) => {
         setLoading(true);
         try {
             await sendConnectionRequest(user._id);
-            toast.success('Connection request sent successfully');
+            toast.success('Connection request sent successfully.....');
         } catch (error) {
             console.error(error);
-            toast.error("Error occurred while sending connection request");
+            toast.error("Connection request already sent");
+
         }
         finally {
             setLoading(false);

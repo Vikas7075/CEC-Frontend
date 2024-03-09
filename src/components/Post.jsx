@@ -47,7 +47,7 @@ const Post = ({ post }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true);
+            setLoading(false);
             try {
                 const { data } = await axios.get(`${server}/api/post/comment/${post._id}`, {
                     headers: {
@@ -64,7 +64,7 @@ const Post = ({ post }) => {
             }
         }
         fetchData();
-    }, [post._id, setLoading]);
+    }, [post._id, refresh]);
 
     if (loading) {
         return <Loader />;

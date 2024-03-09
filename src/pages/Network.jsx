@@ -11,7 +11,8 @@ function Network() {
     const [users, setUsers] = useState([]);
     const [connections, setConnections] = useState([]);
     const [requestId, setRequestId] = useState("");
-    const { user, setIsAuthenticated, setLoading } = useContext(Context);
+    const [refresh, setRefresh] = useState(false);
+    const { user, setIsAuthenticated, setLoading, loading } = useContext(Context);
     useEffect(() => {
         setLoading(true);
         fetchData();
@@ -21,7 +22,7 @@ function Network() {
         if (user._id) {
             getConnections();
         }
-    }, [user]);
+    }, [user, refresh]);
     const fetchData = async () => {
         try {
             const response = await axios.get(`${server}/api/users/all/users`, {
@@ -31,7 +32,24 @@ function Network() {
                 withCredentials: true
             });
             console.log(response.data);
-            setUsers(response.data);
+            // Filter out users who are already connected or have pending connection requests
+            const filteredUsers = response.data.filter(user => {
+                // Check if the user is already connected
+                const isConnected = connections.some(conn => conn.receiver._id === user._id || conn.sender._id === user._id);
+
+                // Check if there is a pending connection request
+                const hasPendingRequest = connections.some(conn =>
+                    conn.status === 'pending' && (conn.receiver._id === user._id || conn.sender._id === user._id)
+                );
+
+                // Check if the current user has sent a connection request to this user
+                const sentRequest = connections.some(conn =>
+                    conn.status === 'pending' && conn.sender._id === user._id && conn.receiver._id === currentUser._id
+                );
+
+                return !isConnected && !hasPendingRequest && !sentRequest;
+            });
+            setUsers(filteredUsers);
         } catch (error) {
             console.error(error);
             toast.error(error.response?.data?.error || "Error occurred while fetching data");
@@ -67,6 +85,7 @@ function Network() {
                 withCredentials: true
             });
             toast.success('Request Accepted..')
+            setRefresh((prev) => !prev);
         } catch (error) {
             console.error(error);
             toast.error("Error occurred while accepting connection request");
@@ -78,7 +97,8 @@ function Network() {
             await axios.put(`${server}/api/connect/${requestId}/reject`, null, {
                 withCredentials: true
             });
-            toast.success('Request rejected..')
+            toast.success('Request rejected..');
+            setRefresh((prev) => !prev);
         } catch (error) {
             console.error(error);
             toast.error("Error occurred while rejecting connection request");
@@ -90,14 +110,15 @@ function Network() {
             const response = await axios.post(`${server}/api/connect/${userId}`, null, {
                 withCredentials: true
             });
-            setRequestId(response.data.newRequest._id)
-            toast.success(response.data.message);
+            setRequestId(response.data.newRequest._id);
+            setRefresh((prev) => !prev);
         } catch (error) {
             console.error(error);
-            toast.error(error);
         }
     };
-
+    if (loading) {
+        return <Loader />
+    }
     return (
         <>
             <div>
