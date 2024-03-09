@@ -389,7 +389,7 @@ function UserDashboard() {
                 <h2 className="text-xl font-bold px-6 py-4 border-b">About</h2>
                 <div className="px-6 py-4">
                     <p className="text-gray-700 p-2 leading-1">
-                        {user.bio}
+                        {users.bio}
                     </p>
                 </div>
             </div>
