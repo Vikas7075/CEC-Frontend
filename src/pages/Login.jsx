@@ -29,7 +29,7 @@ function login() {
             //console.log(data)
             toast.success(data.message);
             setIsAuthenticated(true);
-            setLoading(false)
+            //setLoading(false)
             navigate('/')
 
         } catch (error) {

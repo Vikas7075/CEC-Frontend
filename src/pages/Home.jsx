@@ -49,7 +49,7 @@ function Home() {
         }
         fetchData();
 
-    }, []);
+    }, [isAuthenticated, setUser, setLoading]);
     //console.log(user)
 
     // Check if user exists before rendering

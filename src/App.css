@@ -438,7 +438,8 @@ a {
 }
 
 .post-author img {
-  width: 45px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   margin-right: 10px;
   margin-top: 5px;
@@ -529,9 +530,7 @@ a {
 @media screen and (max-width:600px) {
 
   .search-box {
-    background: transparent;
-    width: auto;
-    padding: 0;
+    display: none;
   }
 
   .search-box input {
@@ -582,9 +581,7 @@ a {
     margin: 2px 0;
   }
 
-  .post-activity-link span {
-    display: none;
-  }
+  .post-activity-link span {}
 
   .post-activity-link img {
     margin-right: 0;

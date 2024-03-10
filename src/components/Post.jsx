@@ -131,11 +131,11 @@ const Post = ({ post }) => {
                 </div>
                 <div className="post-activity-link">
                     <img src="images/comment.png" alt="Comment" />
-                    <button onClick={() => setShowModal(!showModal)}><span>Comment</span></button>
+                    <button onClick={() => setShowModal(!showModal)}><span className=' font-semibold'>Comment</span></button>
                 </div>
                 <div className="post-activity-link hover:cursor-pointer" onClick={handleShare}>
                     <img src="images/share.png" alt="Share" />
-                    <span>Share</span>
+                    <span className=' font-semibold'>Share</span>
                 </div>
                 {/* <div className="post-activity-link">
                     <img src="images/send.png" alt="Send" />

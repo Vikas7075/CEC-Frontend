@@ -17,7 +17,7 @@ import ChatList from './components/ChatList.jsx'
 
 function App() {
 
-  const { user, setUser, setIsAuthenticated, setLoading } = useContext(Context);
+  const { user, setUser, setIsAuthenticated, isAuthenticated, setLoading } = useContext(Context);
 
 
   useEffect(() => {
@@ -44,7 +44,7 @@ function App() {
     }
     fetchData();
 
-  }, []);
+  }, [setUser, isAuthenticated, setLoading]);
   return (
 
     <>

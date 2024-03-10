@@ -53,7 +53,7 @@ const LikeButton = ({ postId }) => {
     return (
         <div>
             {!isAuthenticated && navigate('/login')}
-            <button onClick={handleLike} disabled={loading} style={{ color: liked ? 'blue' : 'inherit' }}>
+            <button className=' ml-1 font-semibold' onClick={handleLike} disabled={loading} style={{ color: liked ? 'blue' : 'inherit' }}>
                 {loading ? 'Loading...' : liked ? 'Liked' : 'Like'}
             </button>
             {error && <div>{error}</div>}

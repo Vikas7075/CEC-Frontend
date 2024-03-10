@@ -76,33 +76,38 @@ function UserDashboard() {
             });
             console.log(data)
             setUser(data);
-            toast.success(data.message);
-            setIsAuthenticated(true);
 
             // Fetch education details for each education ID
 
-            const eduResponse = await axios.get(`${server}/api/education/${userId}`, {
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                withCredentials: true
+            try {
+                const eduResponse = await axios.get(`${server}/api/education/${userId}`, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    withCredentials: true
 
-            });
+                });
+                setEducationData(eduResponse.data.education);
+            } catch (error) {
+                toast.error(error.response.data.message);
+            }
 
 
+            try {
+                const expResponse = await axios.get(`${server}/api/experiance/${userId}`, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    withCredentials: true
+                });
 
-            setEducationData(eduResponse.data.education);
+                setExperienceData(expResponse.data.experience);
+            } catch (error) {
+                toast.error(error.response.data.message);
 
-            const expResponse = await axios.get(`${server}/api/experiance/${userId}`, {
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                withCredentials: true
-            });
-
-            setExperienceData(expResponse.data.experience);
+            }
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error);
             setIsAuthenticated(false);
         } finally {
             setLoading(false);
@@ -293,7 +298,7 @@ function UserDashboard() {
     return (
         <div className="grid grid-cols-1  gap-6 p-0">
             <div className="bg-white border rounded-md shadow-md">
-                <img src={users.profilePicture || 'https://cdn.vectorstock.com/i/preview-1x/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg'} className="w-full h-40 object-cover rounded-t-md" alt="Banner" />
+                <img src={users.profilePicture || 'https://cdn.vectorstock.com/i/preview-1x/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg'} className="w-full h-40 object-cover rounded-t-md opacity-60" alt="Banner" />
 
                 <div className="px-6 py-4">
                     <img src={users.profilePicture || 'https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg'} alt="Profile" className="w-20 h-20 object-cover rounded-full mb-4" />
