@@ -123,28 +123,29 @@ a {
 /* ------container ---- */
 
 .container {
-  padding: 20px 6%;
+  padding: 10px 5%;
   display: flex;
-
+  justify-content: space-between;
+  gap: 12px;
+  margin: auto;
 }
 
 /* ------left-sidebar----- */
 .left-sidebar {
   flex: 0 0 250px;
-  position: fixed;
-  left: 6%;
-  top: 73px;
+  position: sticky;
   bottom: 0;
 
 }
 
 .sidebar-profile-box {
   background: #fff;
+  border: 1.5px solid rgb(214, 207, 207);
 }
 
 .sidebar-profile-info {
   padding: 0 25px;
-  width: 310px;
+  width: 300px;
 }
 
 .sidebar-profile-info img {
@@ -215,6 +216,7 @@ a {
   padding: 5px 25px;
   font-weight: 500;
   margin: 20px 0 10px;
+  border: 1.5px solid rgb(214, 207, 207);
 
 }
 
@@ -250,15 +252,15 @@ a {
 /* ------right-sidebar----- */
 .right-sidebar {
   flex: 0 0 250px;
-  position: fixed;
-  right: 6%;
-  top: 73px;
+  position: sticky;
   bottom: 0;
+
 }
 
 .sidebar-news {
   background: #fff;
   padding: 10px 25px;
+  border: 1.5px solid rgb(214, 207, 207);
 }
 
 .sidebar-news h3 {
@@ -329,9 +331,7 @@ a {
 
 /* -------main-content----- */
 .main-content {
-  flex: 1;
-  margin-left: 326px;
-  margin-right: 206px
+  width: 600px;
 }
 
 .create-post {
@@ -425,8 +425,10 @@ a {
 .post {
   background: #fff;
   align-items: flex-start;
-  margin: 10px 10px;
+  margin: 10px 0px;
   border-radius: 7px;
+  max-width: 100%;
+  border: 1.5px solid rgb(214, 207, 207);
 
 }
 
@@ -435,6 +437,26 @@ a {
   align-items: center;
   margin-bottom: 0px;
   padding: 8px;
+}
+
+.image-container {
+  max-width: 100%;
+  /* Ensure the image container doesn't exceed the post width */
+  overflow: hidden;
+  /* Hide any overflow of the image */
+  border-top-left-radius: 7px;
+  /* Add rounded corners to the top left */
+  border-top-right-radius: 7px;
+  /* Add rounded corners to the top right */
+}
+
+
+.post-image {
+  width: 100%;
+  /* Ensure the image fills the container */
+  height: auto;
+  /* Maintain aspect ratio */
+  object-fit: cover;
 }
 
 .post-author img {
@@ -461,8 +483,11 @@ a {
 
 .post p {
   font-size: 14px;
+  line-height: 1.6;
   margin-bottom: 5px;
   padding: 10px;
+  white-space: pre-line;
+  font-weight: 400;
 }
 
 .post-stats {
@@ -573,8 +598,7 @@ a {
   }
 
   .main-content {
-    flex: 0 0 100%;
-    margin: 0;
+    width: 100%;
   }
 
   .post-stats div {

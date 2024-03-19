@@ -7,12 +7,18 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { calculateTimeDifference } from '../utils/timeUtils';
 import Loader from './Loader';
+import formatContent from '../utils/formatPostContent';
 
 const Post = ({ post }) => {
-    const { isAuthenticated, setIsAuthenticated } = useContext(Context);
+    const { user, isAuthenticated, setIsAuthenticated } = useContext(Context);
     const { loading, setLoading } = useContext(Context);
     const [showModal, setShowModal] = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
     const [comment, setComment] = useState([]);
+    const [editContent, setEditContent] = useState(post.content); // State for edit mode
+    const [image, setImage] = useState(null);
+    const [editImage, setEditImage] = useState(post.image); // State for edit mode
     const [content, setContent] = useState("");
     const [refresh, setRefresh] = useState(false);
     const [showFullContent, setShowFullContent] = useState(false);
@@ -23,6 +29,47 @@ const Post = ({ post }) => {
         setShowFullContent(!showFullContent);
     };
 
+    const handleToggleOptions = () => {
+        setShowOptions(!showOptions);
+    };
+    const handleEditOptions = () => {
+        setShowEditModal(!showEditModal);
+    };
+
+    const handleEditContentChange = (e) => {
+        setEditContent(e.target.value);
+    };
+
+    const handleEditImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setEditImage(file);
+        }
+    };
+
+    const handleSubmitEdit = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('content', editContent);
+            if (editImage) {
+                formData.append('image', editImage);
+            }
+
+            await axios.put(`${server}/api/post/${post._id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                withCredentials: true,
+            });
+
+            toast.success('Post updated successfully');
+            setRefresh((prev) => !prev);
+            setShowEditModal(false);
+        } catch (error) {
+            toast.error(error.response.data.message || 'Failed to update post');
+            console.log(error);
+        }
+    };
     const addComment = async (e) => {
         e.preventDefault();
         if (!content.trim()) {
@@ -41,6 +88,21 @@ const Post = ({ post }) => {
             setRefresh((prev) => !prev);
         } catch (error) {
             toast.error(error.response.data.message || "Failed to add comment");
+        }
+    }
+
+    const deletePost = async () => {
+        try {
+            await axios.delete(`${server}/api/post/${post._id}`, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true
+            })
+            toast.success("Post deleted successfully..");
+            setRefresh((prev) => !prev);
+        } catch (error) {
+            toast.error(error.response.data.message || "Post deleted....");
         }
     }
 
@@ -89,7 +151,7 @@ const Post = ({ post }) => {
 
     return (
         <div className="post">
-            <div className="post-author">
+            <div className="post-author relative">
                 <img className='' src={post.user.profilePicture} alt="Author" />
                 <div>
                     {isAuthenticated ? (
@@ -102,18 +164,46 @@ const Post = ({ post }) => {
                     <small>{post.user.headline}</small>
                     <small>{calculateTimeDifference(post.createdAt)}</small>
                 </div>
+                {isAuthenticated && user._id === post.user._id && (
+                    <span className="absolute right-4 top-0 mt-2 mr-2 font-extrabold text-gray-500 hover:text-black cursor-pointer" onClick={handleToggleOptions} >...</span>
+                )}
+
+                {showOptions && (
+                    <div className="absolute right-6 top-10 w-30 text-black bg-white shadow-lg rounded-md p-2">
+                        <button className="block w-full text-left py-2 px-4 hover:bg-gray-100" onClick={deletePost}>
+                            Delete
+                        </button>
+                        <button className="block w-full text-left py-2 px-4 hover:bg-gray-100" onClick={handleEditOptions}>
+                            Edit
+                        </button>
+                        <button className="block w-full text-left py-2 px-4 hover:bg-gray-100" onClick={() => console.log('Delete')}>
+                            Send
+                        </button>
+                    </div>
+                )}
+                {/* Modal for editing post */}
+                {showEditModal && (
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg p-8">
+                        <h2 className="text-xl font-semibold mb-4">Edit Post</h2>
+                        <textarea rows="4" value={editContent} onChange={handleEditContentChange} placeholder="Enter your post text" className="w-full border rounded-md p-2 mb-4"></textarea>
+                        <input type="file" accept="image/*" onChange={handleEditImageChange} className="mb-4" />
+                        <button onClick={handleSubmitEdit} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Submit</button>
+                        <button onClick={() => setShowEditModal(false)} className="ml-2 text-gray-500 hover:text-gray-700">Close</button>
+                    </div>
+                )}
+
             </div>
             <p>
-                {showFullContent ? post.content : truncatedContent}
+                {showFullContent ? formatContent(post.content) : truncatedContent}
                 {post.content.length > maxContentLength && !showFullContent && (
                     <span className="text-blue-500 cursor-pointer" onClick={toggleContent}>Read More</span>
                 )}
             </p>
-            {post.image && (
-                <div className='image-container w-full max-w-full h-auto'>
-                    <img src={post.image} alt="Post" />
+            {post.image && post.image.trim() !== "" ? (
+                <div className='image-container'>
+                    <img src={post.image} alt="" className="post-image" />
                 </div>
-            )}
+            ) : (null)}
 
             <div className="post-stats">
                 <div>

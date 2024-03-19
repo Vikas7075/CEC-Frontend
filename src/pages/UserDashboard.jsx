@@ -61,58 +61,74 @@ function UserDashboard() {
 
     useEffect(() => {
         fetchData();
-        fetPostById()
-    }, [userId, refresh, setLoading])  // Fetch data whenever userId changes
+        fetPostById();
+    }, [userId, refresh]);
 
     const fetchData = async () => {
-        setLoading(true);
+
         try {
-            const { data } = await axios.get(`${server}/api/users/${userId}`, {
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                withCredentials: true
+            const userData = await fetchUserData();
+            setUser(userData);
 
-            });
-            console.log(data)
-            setUser(data);
+            const [educationData, experienceData] = await Promise.all([
+                fetchEducationData(),
+                fetchExperienceData()
+            ]);
 
-            // Fetch education details for each education ID
+            setEducationData(educationData);
+            setExperienceData(experienceData);
+            //setRefresh((prev) => !prev);
 
-            try {
-                const eduResponse = await axios.get(`${server}/api/education/${userId}`, {
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    withCredentials: true
-
-                });
-                setEducationData(eduResponse.data.education);
-            } catch (error) {
-                toast.error(error.response.data.message);
-            }
-
-
-            try {
-                const expResponse = await axios.get(`${server}/api/experiance/${userId}`, {
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    withCredentials: true
-                });
-
-                setExperienceData(expResponse.data.experience);
-            } catch (error) {
-                toast.error(error.response.data.message);
-
-            }
         } catch (error) {
-            toast.error(error);
+            console.error('Error fetching user data:', error);
+            toast.error("Failed to fetch user data");
             setIsAuthenticated(false);
         } finally {
             setLoading(false);
         }
-    }
+    };
+
+    const fetchUserData = async () => {
+        const response = await axios.get(`${server}/api/users/${userId}`, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            withCredentials: true
+        });
+        return response.data;
+    };
+
+    const fetchEducationData = async () => {
+        try {
+            const response = await axios.get(`${server}/api/education/${userId}`, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true
+            });
+            return response.data.education;
+        } catch (error) {
+            console.error('Error fetching education data:', error);
+            toast.error("Failed to fetch education data");
+            return [];
+        }
+    };
+
+    const fetchExperienceData = async () => {
+        try {
+            const response = await axios.get(`${server}/api/experiance/${userId}`, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                withCredentials: true
+            });
+            return response.data.experience;
+        } catch (error) {
+            console.error('Error fetching experience data:', error);
+            toast.error("Failed to fetch experience data");
+            return [];
+        }
+    };
 
     const fetPostById = async () => {
         try {
@@ -123,11 +139,11 @@ function UserDashboard() {
                 withCredentials: true
             });
             setPosts(response.data.post);
-            console.log(response.data.post)
         } catch (error) {
-            console.log(error)
+            console.error('Error fetching posts:', error);
+            toast.error("Failed to fetch user posts");
         }
-    }
+    };
 
     const handleEducationSubmit = async (e) => {
         e.preventDefault();
@@ -178,7 +194,7 @@ function UserDashboard() {
 
             setEducationData(educationData.map(edu => (edu._id === editEducation._id ? response.data : edu)));
             toast.success("Education updated successfully");
-            setShowModal(false);
+            setEditEducation(null);
             setRefresh((prev) => !prev);
         } catch (error) {
             console.log(error);
@@ -235,7 +251,7 @@ function UserDashboard() {
             // Update experienceData with the modified experience details
             setExperienceData(experienceData.map(exp => (exp._id === editExperience._id ? response.data : exp)));
             toast.success("Experience updated successfully");
-            setShowModal(false);
+            setEditExperience(null);
             setRefresh((prev) => !prev);
         } catch (error) {
             console.log(error);

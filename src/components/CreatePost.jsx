@@ -35,7 +35,6 @@ const CreatePost = () => {
 
     // Function to handle form submission
     const handleSubmit = async () => {
-        // Create form data
         const formData = new FormData();
         formData.append('content', text);
         formData.append('image', image);
@@ -48,8 +47,6 @@ const CreatePost = () => {
                 },
                 withCredentials: true
             });
-            // Set refresh to true to trigger a re-render of the component
-            setRefresh(true);
             closeModal();
             toast.success("Post Created Successfully");
 
@@ -58,13 +55,6 @@ const CreatePost = () => {
             toast.error("No image file provided");
         }
     };
-
-    useEffect(() => {
-        if (refresh) {
-            // Reload the page when refresh is true
-            window.location.reload();
-        }
-    }, [refresh]);
 
     return (
         <form>

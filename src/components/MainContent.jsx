@@ -9,6 +9,7 @@ import Loader from './Loader';
 const MainContent = () => {
 
     const [data, setData] = useState([]);
+    const [refresh, setRefresh] = useState(false);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -20,6 +21,7 @@ const MainContent = () => {
                     withCredentials: true
                 });
                 setData(response.data.posts.reverse());
+                setRefresh((prev) => !prev);
 
             } catch (error) {
                 console.error('Error getting post:', error);
@@ -27,7 +29,7 @@ const MainContent = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [refresh]);
 
     if (!data) {
         return <Loader />

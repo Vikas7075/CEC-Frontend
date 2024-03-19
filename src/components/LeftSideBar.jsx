@@ -11,7 +11,7 @@ const LeftSidebar = ({ user }) => {
     return (
         <div className="left-sidebar">
             <div className="sidebar-profile-box">
-                <img className=' h-[110px] object-cover' src={user.profilePicture || 'https://cdn.vectorstock.com/i/preview-1x/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg'} width="100%" alt="cover-pic" />
+                <img className=' h-[90px] object-cover' src={user.profilePicture || 'https://cdn.vectorstock.com/i/preview-1x/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg'} width="100%" alt="cover-pic" />
                 <div className="sidebar-profile-info">
                     <img src={user.profilePicture || 'https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg'} alt="user-1" />
                     <Link className=' hover:underline' to={`/userdashboard/${user._id}`}><h1>{user.username}</h1></Link>
