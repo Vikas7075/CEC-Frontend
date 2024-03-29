@@ -306,6 +306,17 @@ function UserDashboard() {
         }
     }
     console.log(chatId)
+
+    const handleRef = () => {
+        const confirmation = window.prompt('Are you sure you want to send a reference to this user?');
+        if (confirmation) {
+            // User confirmed
+            alert('Reference sent successfully to the user!');
+        } else {
+            // User canceled or dismissed the prompt
+            alert('Reference sending canceled.');
+        }
+    };
     // Check if user exists before rendering
     if (loading) {
         return <Loader />;
@@ -327,6 +338,7 @@ function UserDashboard() {
                     <div className="mt-6 space-x-2">
                         <button className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">My Network</button>
                         <button onClick={handleCreateChat} className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">Message</button>
+                        <button onClick={handleRef} className="px-4 py-1 rounded-2xl font-semibold border text-blue-700 bg-transparent hover:bg-blue-100">Ref</button>
                     </div>
                 </div>
             </div>

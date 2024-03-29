@@ -14,6 +14,7 @@ import PageNotFound from './components/PageNotFound.jsx'
 import Network from './pages/Network.jsx'
 import Message from './pages/Message.jsx'
 import ChatList from './components/ChatList.jsx'
+import AdminDashboard from './pages/AdminDashboard.jsx'
 
 function App() {
 
@@ -58,6 +59,7 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/userdashboard/:id' element={<UserDashboard />} />
+          <Route path='/admin' element={<AdminDashboard />} />
           <Route path='/mynetwork' element={<Network />} />
           <Route path='/mymessage' element={<Message />} />
           <Route path='/chat/:chatId' element={<ChatList />} />
